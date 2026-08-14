@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, FormEvent } from 'react';
 import { createDataSDK, gql } from '@salesforce/platform-sdk/data';
 import { Input } from '../components/ui';
 
@@ -11,10 +11,22 @@ const ShippingRequest = () => {
   const [shipDate, setShipDate] = useState('');
   const [deliveryDate, setDeliveryDate] = useState('');
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
+      if (loading) return;
+
+      // basic client-side validation
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        alert('Please provide a valid email address.');
+        return;
+      }
+
+      setLoading(true);
+
       const dataSdk = await createDataSDK();
 
       const mutation = gql`
@@ -84,9 +96,7 @@ const ShippingRequest = () => {
 
       console.log('Created Salesforce Record ID:', record.Id);
 
-      alert(
-        `Shipping request created successfully!\n\nSalesforce Record ID: ${record.Id}`
-      );
+      alert(`Shipping request created successfully!\n\nSalesforce Record ID: ${record.Id}`);
 
       setCompany('');
       setSender('');
@@ -102,8 +112,10 @@ const ShippingRequest = () => {
         'Failed to create the Salesforce record.\n' +
           'Check the browser console for details.'
       );
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [company, sender, email, phone, address, shipDate, deliveryDate, loading]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-300 to-teal-400 p-8">
@@ -209,9 +221,10 @@ const ShippingRequest = () => {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="bg-transparent border-2 border-black px-6 py-2 rounded-md font-medium hover:bg-black/10"
+              disabled={loading}
+              className={`bg-transparent border-2 border-black px-6 py-2 rounded-md font-medium hover:bg-black/10 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Submit Request
+              {loading ? 'Submitting…' : 'Submit Request'}
             </button>
           </div>
         </form>
