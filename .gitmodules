@@ -1,3 +1,6 @@
 ﻿[submodule "React-Deploymet-1"]
 path = React-Deploymet-1
 url = https://github.com/Peddiphanindra/React-Deploymet-1.git
+[submodule "force-app/main/default/uiBundles/ShippingRequestApp"]
+path = force-app/main/default/uiBundles/ShippingRequestApp
+url = https://github.com/Peddiphanindra/React-Deploymet-1.git
