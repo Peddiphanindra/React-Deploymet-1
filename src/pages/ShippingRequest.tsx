@@ -231,7 +231,6 @@ const ShippingRequest = () => {
       </div>
     </div>
   );
-  
 };
 
 export default ShippingRequest;
